@@ -1,0 +1,21 @@
+name: myZeus
+main: REALDrummer.myZeus
+version: 0
+description: >
+             This plugin allows admins to control the weather with commands, with tools, or even with YOUR MIND (emoticons)!!!
+commands:
+   sun:
+      aliases: [happy]
+      description: This command brings out the sun.
+      usage: |
+           /<command>
+   rain:
+      aliases: [sad, snow]
+      description: This makes a light storm come rolling in.
+      usage: |
+           /<command>
+   thunderstorm:
+      aliases: [storm, thunder, lightning, angry, anger, mad, rage, raging, fury, furious]
+      description: This command brings a thuderous tempest across your server.
+      usage: |
+           /<command>
