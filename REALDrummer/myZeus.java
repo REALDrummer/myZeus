@@ -69,11 +69,14 @@ public class myZeus extends JavaPlugin implements Listener {
 
 	// intra-command methods
 	private static String replaceAll(String to_return, String to_change, String to_change_to) {
-		int index = 0;
-		while (to_return.contains(to_change) && to_return.length() >= index + to_change.length()) {
-			if (to_return.substring(index, index + to_change.length()).equals(to_change))
-				to_return = to_return.substring(0, index) + to_change_to + to_return.substring(index + to_change.length());
-			index++;
+		if (!to_return.toLowerCase().contains(to_change.toLowerCase()))
+			return to_return;
+		for (int i = 0; to_return.length() >= i + to_change.length(); i++) {
+			if (to_return.substring(i, i + to_change.length()).equalsIgnoreCase(to_change))
+				to_return = to_return.substring(0, i) + to_change_to + to_return.substring(i + to_change.length());
+			i = i + to_change_to.length() - 1;
+			if (!to_return.toLowerCase().contains(to_change.toLowerCase()))
+				break;
 		}
 		return to_return;
 	}
@@ -90,7 +93,7 @@ public class myZeus extends JavaPlugin implements Listener {
 			weather_messages = weather_change_messages.get("sun");
 		if (weather_messages != null && weather_messages.size() > 0) {
 			String message = ChatColor.AQUA + weather_messages.get((int) Math.random() * weather_messages.size());
-			if (message.contains("[player]"))
+			if (!message.toLowerCase().contains("[player]"))
 				server.broadcastMessage(message);
 			else {
 				console.sendMessage(message);
@@ -179,19 +182,21 @@ public class myZeus extends JavaPlugin implements Listener {
 				if (!my_world.getWorldFolder().getName().endsWith("_nether") && !my_world.getWorldFolder().getName().endsWith("_the_end")) {
 					target_worlds.add(my_world);
 				}
-		if (target_worlds.size() > 0) {
-			boolean has_broadcasted_message = false;
+		if (target_worlds.size() > 0)
 			for (World world : target_worlds) {
 				sender.sendMessage(world.getWorldFolder().getName());
 				if (weather.equals("sun")) {
 					if (world.hasStorm() || world.isThundering()) {
 						world.setStorm(false);
 						world.setThundering(false);
-						ArrayList<String> messages = weather_change_messages.get(weather);
-						if (messages != null && !has_broadcasted_message) {
-							server.broadcastMessage(ChatColor.AQUA + messages.get((int) (Math.random() * messages.size())));
-							has_broadcasted_message = true;
-						}
+						/*
+						 * ArrayList<String> messages =
+						 * weather_change_messages.get(weather); if (messages !=
+						 * null && !has_broadcasted_message) {
+						 * server.broadcastMessage(ChatColor.AQUA +
+						 * messages.get((int) (Math.random() *
+						 * messages.size()))); has_broadcasted_message = true; }
+						 */
 					} else if (!through_chat && target_worlds.size() == 1)
 						sender.sendMessage(ChatColor.RED + "It's already sunny out!");
 					else if (!through_chat) {
@@ -207,9 +212,13 @@ public class myZeus extends JavaPlugin implements Listener {
 					if (!world.hasStorm() || world.isThundering()) {
 						world.setStorm(true);
 						world.setThundering(false);
-						ArrayList<String> messages = weather_change_messages.get(weather);
-						if (messages != null)
-							server.broadcastMessage(ChatColor.AQUA + messages.get((int) (Math.random() * messages.size())));
+						/*
+						 * ArrayList<String> messages =
+						 * weather_change_messages.get(weather); if (messages !=
+						 * null) server.broadcastMessage(ChatColor.AQUA +
+						 * messages.get((int) (Math.random() *
+						 * messages.size())));
+						 */
 					} else if (!through_chat)
 						sender.sendMessage(ChatColor.RED + "It's already raining!");
 					else if (!through_chat) {
@@ -225,9 +234,13 @@ public class myZeus extends JavaPlugin implements Listener {
 					if (!world.hasStorm() && !world.isThundering()) {
 						world.setStorm(true);
 						world.setThundering(true);
-						ArrayList<String> messages = weather_change_messages.get(weather);
-						if (messages != null)
-							server.broadcastMessage(ChatColor.AQUA + messages.get((int) (Math.random() * messages.size())));
+						/*
+						 * ArrayList<String> messages =
+						 * weather_change_messages.get(weather); if (messages !=
+						 * null) server.broadcastMessage(ChatColor.AQUA +
+						 * messages.get((int) (Math.random() *
+						 * messages.size())));
+						 */
 					} else if (!through_chat)
 						sender.sendMessage(ChatColor.RED + "It's already storming!");
 					else if (!through_chat) {
@@ -241,7 +254,7 @@ public class myZeus extends JavaPlugin implements Listener {
 					}
 				}
 			}
-		} else {
+		else {
 			sender.sendMessage(ChatColor.RED + "I can't find \"" + parameters[0] + ".\"");
 			if (worlds.size() == 1)
 				sender.sendMessage(ChatColor.RED + "Your server has only one world: \"" + worlds.get(0).getWorldFolder().getName() + ".\"");
