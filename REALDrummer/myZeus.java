@@ -1,8 +1,12 @@
 package REALDrummer;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.swing.Timer;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -17,13 +21,16 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class myZeus extends JavaPlugin implements Listener {
+public class myZeus extends JavaPlugin implements Listener, ActionListener {
 	private static Server server;
 	private static ConsoleCommandSender console;
 	private List<World> worlds;
+	private World world_with_weather = null;
 	private HashMap<String, ArrayList<String>> weather_change_messages = new HashMap<String, ArrayList<String>>();
 	private String[] parameters = null;
+	private Timer timer = new Timer(1000, this);
 
+	//plugin enable/disable and the command operator
 	public void onEnable() {
 		server = getServer();
 		console = server.getConsoleSender();
@@ -36,28 +43,25 @@ public class myZeus extends JavaPlugin implements Listener {
 		saveTheWeatherChangeMessages(console, true);
 	}
 
-	public boolean onCommand(CommandSender sender, Command command, String command_label, String[] my_parameters) {
+	public boolean onCommand(CommandSender sender, Command cmd, String command, String[] my_parameters) {
 		parameters = my_parameters;
-		if (command_label.equalsIgnoreCase("sun") || command_label.equalsIgnoreCase("happy") || command_label.equalsIgnoreCase("rain")
-				|| command_label.equalsIgnoreCase("sad") || command_label.equalsIgnoreCase("snow") || command_label.equalsIgnoreCase("thunderstorm")
-				|| command_label.equalsIgnoreCase("storm") || command_label.equalsIgnoreCase("thunder") || command_label.equalsIgnoreCase("lightning")
-				|| command_label.equalsIgnoreCase("angry") || command_label.equalsIgnoreCase("anger") || command_label.toLowerCase().startsWith("mad")
-				|| command_label.equalsIgnoreCase("rage") || command_label.equalsIgnoreCase("raging") || command_label.equalsIgnoreCase("fury")
-				|| command_label.equalsIgnoreCase("furious")) {
+		if (command.equalsIgnoreCase("sun") || command.equalsIgnoreCase("happy") || command.equalsIgnoreCase("rain") || command.equalsIgnoreCase("sad")
+				|| command.equalsIgnoreCase("snow") || command.equalsIgnoreCase("thunderstorm") || command.equalsIgnoreCase("storm")
+				|| command.equalsIgnoreCase("thunder") || command.equalsIgnoreCase("lightning") || command.equalsIgnoreCase("angry")
+				|| command.equalsIgnoreCase("anger") || command.toLowerCase().startsWith("mad") || command.equalsIgnoreCase("rage")
+				|| command.equalsIgnoreCase("raging") || command.equalsIgnoreCase("fury") || command.equalsIgnoreCase("furious")) {
 			if (!(sender instanceof Player) || sender.hasPermission("myzeus.weather"))
-				changeTheWeather(sender, command_label.toLowerCase(), false);
+				changeTheWeather(sender, command.toLowerCase(), false);
 			else
 				sender.sendMessage(ChatColor.RED + "You're not Zeus! You can't change the weather!");
 			return true;
-		} else if ((command_label.equalsIgnoreCase("myZeus") || command_label.equalsIgnoreCase("mZ")) && parameters.length > 0
-				&& parameters[0].equalsIgnoreCase("load")) {
+		} else if ((command.equalsIgnoreCase("myZeus") || command.equalsIgnoreCase("mZ")) && parameters.length > 0 && parameters[0].equalsIgnoreCase("load")) {
 			if (!(sender instanceof Player) || sender.hasPermission("myzeus.admin"))
 				loadTheWeatherChangeMessages(sender);
 			else
 				sender.sendMessage(ChatColor.RED + "Sorry, but you don't have permission to use " + ChatColor.AQUA + "/myZeus load" + ChatColor.RED + ".");
 			return true;
-		} else if ((command_label.equalsIgnoreCase("myZeus") || command_label.equalsIgnoreCase("mZ")) && parameters.length > 0
-				&& parameters[0].equalsIgnoreCase("save")) {
+		} else if ((command.equalsIgnoreCase("myZeus") || command.equalsIgnoreCase("mZ")) && parameters.length > 0 && parameters[0].equalsIgnoreCase("save")) {
 			if (!(sender instanceof Player) || sender.hasPermission("myzeus.admin"))
 				saveTheWeatherChangeMessages(sender, true);
 			else
@@ -72,22 +76,22 @@ public class myZeus extends JavaPlugin implements Listener {
 		if (!to_return.toLowerCase().contains(to_change.toLowerCase()))
 			return to_return;
 		for (int i = 0; to_return.length() >= i + to_change.length(); i++) {
-			if (to_return.substring(i, i + to_change.length()).equalsIgnoreCase(to_change))
+			if (to_return.substring(i, i + to_change.length()).equalsIgnoreCase(to_change)) {
 				to_return = to_return.substring(0, i) + to_change_to + to_return.substring(i + to_change.length());
-			i = i + to_change_to.length() - 1;
+				i = i + to_change_to.length() - 1;
+			}
 			if (!to_return.toLowerCase().contains(to_change.toLowerCase()))
 				break;
 		}
 		return to_return;
 	}
 
-	// listeners
-	@EventHandler
-	public void displayWeatherChangeMessage(WeatherChangeEvent event) {
+	@Override
+	public void actionPerformed(ActionEvent event) {
 		ArrayList<String> weather_messages;
-		if (event.getWorld().isThundering())
+		if (world_with_weather.isThundering())
 			weather_messages = weather_change_messages.get("thunderstorm");
-		else if (event.getWorld().hasStorm())
+		else if (world_with_weather.hasStorm())
 			weather_messages = weather_change_messages.get("rain");
 		else
 			weather_messages = weather_change_messages.get("sun");
@@ -101,6 +105,14 @@ public class myZeus extends JavaPlugin implements Listener {
 					player.sendMessage(replaceAll(message, "[player]", player.getName()));
 			}
 		}
+		timer.stop();
+	}
+
+	// listeners
+	@EventHandler
+	public void displayWeatherChangeMessage(WeatherChangeEvent event) {
+		world_with_weather = event.getWorld();
+		timer.start();
 	}
 
 	@EventHandler
@@ -184,19 +196,10 @@ public class myZeus extends JavaPlugin implements Listener {
 				}
 		if (target_worlds.size() > 0)
 			for (World world : target_worlds) {
-				sender.sendMessage(world.getWorldFolder().getName());
 				if (weather.equals("sun")) {
 					if (world.hasStorm() || world.isThundering()) {
 						world.setStorm(false);
 						world.setThundering(false);
-						/*
-						 * ArrayList<String> messages =
-						 * weather_change_messages.get(weather); if (messages !=
-						 * null && !has_broadcasted_message) {
-						 * server.broadcastMessage(ChatColor.AQUA +
-						 * messages.get((int) (Math.random() *
-						 * messages.size()))); has_broadcasted_message = true; }
-						 */
 					} else if (!through_chat && target_worlds.size() == 1)
 						sender.sendMessage(ChatColor.RED + "It's already sunny out!");
 					else if (!through_chat) {
@@ -212,13 +215,6 @@ public class myZeus extends JavaPlugin implements Listener {
 					if (!world.hasStorm() || world.isThundering()) {
 						world.setStorm(true);
 						world.setThundering(false);
-						/*
-						 * ArrayList<String> messages =
-						 * weather_change_messages.get(weather); if (messages !=
-						 * null) server.broadcastMessage(ChatColor.AQUA +
-						 * messages.get((int) (Math.random() *
-						 * messages.size())));
-						 */
 					} else if (!through_chat)
 						sender.sendMessage(ChatColor.RED + "It's already raining!");
 					else if (!through_chat) {
@@ -234,13 +230,6 @@ public class myZeus extends JavaPlugin implements Listener {
 					if (!world.hasStorm() && !world.isThundering()) {
 						world.setStorm(true);
 						world.setThundering(true);
-						/*
-						 * ArrayList<String> messages =
-						 * weather_change_messages.get(weather); if (messages !=
-						 * null) server.broadcastMessage(ChatColor.AQUA +
-						 * messages.get((int) (Math.random() *
-						 * messages.size())));
-						 */
 					} else if (!through_chat)
 						sender.sendMessage(ChatColor.RED + "It's already storming!");
 					else if (!through_chat) {
