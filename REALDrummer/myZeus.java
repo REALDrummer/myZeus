@@ -17,7 +17,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,7 +30,7 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
 	private String[] parameters = null;
 	private Timer timer = new Timer(1000, this);
 
-	//plugin enable/disable and the command operator
+	// plugin enable/disable and the command operator
 	public void onEnable() {
 		server = getServer();
 		console = server.getConsoleSender();
@@ -46,10 +46,9 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
 	public boolean onCommand(CommandSender sender, Command cmd, String command, String[] my_parameters) {
 		parameters = my_parameters;
 		if (command.equalsIgnoreCase("sun") || command.equalsIgnoreCase("happy") || command.equalsIgnoreCase("rain") || command.equalsIgnoreCase("sad")
-				|| command.equalsIgnoreCase("snow") || command.equalsIgnoreCase("thunderstorm") || command.equalsIgnoreCase("storm")
-				|| command.equalsIgnoreCase("thunder") || command.equalsIgnoreCase("lightning") || command.equalsIgnoreCase("angry")
-				|| command.equalsIgnoreCase("anger") || command.toLowerCase().startsWith("mad") || command.equalsIgnoreCase("rage")
-				|| command.equalsIgnoreCase("raging") || command.equalsIgnoreCase("fury") || command.equalsIgnoreCase("furious")) {
+				|| command.equalsIgnoreCase("snow") || command.equalsIgnoreCase("thunderstorm") || command.equalsIgnoreCase("storm") || command.equalsIgnoreCase("thunder")
+				|| command.equalsIgnoreCase("lightning") || command.equalsIgnoreCase("angry") || command.equalsIgnoreCase("anger") || command.toLowerCase().startsWith("mad")
+				|| command.equalsIgnoreCase("rage") || command.equalsIgnoreCase("raging") || command.equalsIgnoreCase("fury") || command.equalsIgnoreCase("furious")) {
 			if (!(sender instanceof Player) || sender.hasPermission("myzeus.weather"))
 				changeTheWeather(sender, command.toLowerCase(), false);
 			else
@@ -116,17 +115,13 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
 	}
 
 	@EventHandler
-	public void changeWeatherWithChat(PlayerChatEvent event) {
+	public void changeWeatherWithChat(AsyncPlayerChatEvent event) {
 		if (event.getPlayer().hasPermission("myzeus.emoticoncontrol")) {
 			String formatted_message = replaceAll(replaceAll(event.getMessage(), "-", ""), " ", "");
-			if (formatted_message.endsWith(":)")
-					|| formatted_message.endsWith(":D")
-					|| formatted_message.endsWith("=)")
-					|| formatted_message.endsWith("=D")
-					|| (formatted_message.endsWith(")") && (replaceAll(formatted_message, ")", "").endsWith(":") || replaceAll(formatted_message, ")", "")
-							.endsWith("=")))
-					|| (formatted_message.endsWith("D") && (replaceAll(formatted_message, "D", "").endsWith(":") || replaceAll(formatted_message, "D", "")
-							.endsWith("="))) || event.getMessage().toLowerCase().startsWith("let there be light"))
+			if (formatted_message.endsWith(":)") || formatted_message.endsWith(":D") || formatted_message.endsWith("=)") || formatted_message.endsWith("=D")
+					|| (formatted_message.endsWith(")") && (replaceAll(formatted_message, ")", "").endsWith(":") || replaceAll(formatted_message, ")", "").endsWith("=")))
+					|| (formatted_message.endsWith("D") && (replaceAll(formatted_message, "D", "").endsWith(":") || replaceAll(formatted_message, "D", "").endsWith("=")))
+					|| event.getMessage().toLowerCase().startsWith("let there be light"))
 				changeTheWeather(event.getPlayer(), "sun", true);
 			else if (formatted_message.endsWith(":(")
 					|| formatted_message.endsWith(";(")
@@ -134,17 +129,16 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
 					|| formatted_message.endsWith("D:")
 					|| formatted_message.endsWith("D;")
 					|| formatted_message.endsWith("D=")
-					|| (formatted_message.endsWith("(") && (replaceAll(formatted_message, "(", "").endsWith(":")
-							|| replaceAll(formatted_message, "(", "").endsWith(";") || replaceAll(formatted_message, "(", "").endsWith("="))))
+					|| (formatted_message.endsWith("(") && (replaceAll(formatted_message, "(", "").endsWith(":") || replaceAll(formatted_message, "(", "").endsWith(";") || replaceAll(
+							formatted_message, "(", "").endsWith("="))))
 				changeTheWeather(event.getPlayer(), "rain", true);
 			else if (formatted_message.endsWith(">:(")
 					|| formatted_message.endsWith(">=(")
 					|| formatted_message.endsWith("D:<")
 					|| formatted_message.endsWith("D=<")
-					|| (formatted_message.endsWith("(") && (replaceAll(formatted_message, "(", "").endsWith(">:")
-							|| replaceAll(formatted_message, "(", "").endsWith(";") || replaceAll(formatted_message, "(", "").endsWith(">=")))
-					|| (formatted_message.endsWith("<") && (replaceAll(formatted_message, "<", "").endsWith("D:") || replaceAll(formatted_message, "<", "")
-							.endsWith("D="))))
+					|| (formatted_message.endsWith("(") && (replaceAll(formatted_message, "(", "").endsWith(">:") || replaceAll(formatted_message, "(", "").endsWith(";") || replaceAll(
+							formatted_message, "(", "").endsWith(">=")))
+					|| (formatted_message.endsWith("<") && (replaceAll(formatted_message, "<", "").endsWith("D:") || replaceAll(formatted_message, "<", "").endsWith("D="))))
 				changeTheWeather(event.getPlayer(), "thunderstorm", true);
 		}
 	}
@@ -176,10 +170,9 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
 			weather = "sun";
 		else if (weather.equalsIgnoreCase("sad") || weather.equalsIgnoreCase("snow"))
 			weather = "rain";
-		else if (weather.equalsIgnoreCase("storm") || weather.equalsIgnoreCase("thunder") || weather.equalsIgnoreCase("lightning")
-				|| weather.equalsIgnoreCase("angry") || weather.equalsIgnoreCase("anger") || weather.toLowerCase().startsWith("mad")
-				|| weather.equalsIgnoreCase("rage") || weather.equalsIgnoreCase("raging") || weather.equalsIgnoreCase("fury")
-				|| weather.equalsIgnoreCase("furious"))
+		else if (weather.equalsIgnoreCase("storm") || weather.equalsIgnoreCase("thunder") || weather.equalsIgnoreCase("lightning") || weather.equalsIgnoreCase("angry")
+				|| weather.equalsIgnoreCase("anger") || weather.toLowerCase().startsWith("mad") || weather.equalsIgnoreCase("rage") || weather.equalsIgnoreCase("raging")
+				|| weather.equalsIgnoreCase("fury") || weather.equalsIgnoreCase("furious"))
 			weather = "thunderstorm";
 		// find the target worlds
 		ArrayList<World> target_worlds = new ArrayList<World>();
@@ -220,8 +213,7 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
 					else if (!through_chat) {
 						boolean is_already_raining = true;
 						for (World my_world : target_worlds)
-							if (!my_world.getWorldFolder().getName().endsWith("_nether") && !my_world.getWorldFolder().getName().endsWith("_the_end")
-									&& !my_world.hasStorm())
+							if (!my_world.getWorldFolder().getName().endsWith("_nether") && !my_world.getWorldFolder().getName().endsWith("_the_end") && !my_world.hasStorm())
 								is_already_raining = false;
 						if (is_already_raining)
 							sender.sendMessage(ChatColor.RED + "It's already raining!");
