@@ -16,7 +16,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -141,6 +144,12 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
 					|| (formatted_message.endsWith("<") && (replaceAll(formatted_message, "<", "").endsWith("D:") || replaceAll(formatted_message, "<", "").endsWith("D="))))
 				changeTheWeather(event.getPlayer(), "thunderstorm", true);
 		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void cancelLightningFires(BlockIgniteEvent event) {
+		if (event.getCause() == IgniteCause.LIGHTNING)
+			event.setCancelled(true);
 	}
 
 	// loading
