@@ -261,7 +261,7 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
             return;
         }
 
-        // TODO confirmation messages
+        sender.sendMessage(COLOR + "The weather changing messages have been successfully loaded.");//TODO add personality.
 
         saveTheWeatherChangeMessages(sender, false);
     }
@@ -294,7 +294,7 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
         }
 
         if (display_message) {
-            // TODO confirmation messages
+            sender.sendMessage(COLOR + "The weather changing messages have been successfully saved.");// TODO add personality.
         }
     }
 
