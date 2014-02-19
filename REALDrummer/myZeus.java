@@ -41,7 +41,7 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
     private Timer timer = new Timer(1000, this);
 
     /**
-     * Called when the plugin is enabled.
+     * Called when the plugin is enabled. Initializes the important fields and loads the messages that are shown when the weather changes.
      */
     public void onEnable() {
         server = getServer();
@@ -52,18 +52,18 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
     }
 
     /**
-     * Called when the plugin is disabled.
+     * Called when the plugin is disabled. Saves the weather messages in case they have been changed.
      */
     public void onDisable() {
         saveTheWeatherChangeMessages(console, true);
     }
 
     /**
-     * Called whenever a user inputs a command (sends a chat message starting with a "/").
+     * Called whenever a user inputs a command (sends a chat message starting with a "/"). If the command is relevent to this plugin and the person who sent it has permission to use the command, it calls methods that do what the command is supposed to do. If the user doesn't have permissions it sends them a message saying so. If the command is irrelevant to this plugin, it does nothing.
      *
-     * @param sender The person who typed the command.
-     * @param cmd The command itself.
-     * @param command The sting of the command
+     * @param sender The person who sent the command.
+     * @param cmd TODO
+     * @param command TODO
      * @param my_parameters The command parameters.
      * @return If the command did anything.
      */
@@ -95,10 +95,10 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
     }
 
     /**
-     * Replaces everything in a string with something else.
+     * Replaces a specified substring of a string with another string.
      *
      * @param to_return The string to change.
-     * @param to_change The string to replace.
+     * @param to_change The substring to replace.
      * @param to_change_to The string to change <code>to_change</code> to.
      * @return
      */
@@ -158,7 +158,7 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
     /**
      * Displays a message when the weather is changed.
      *
-     * @param event
+     * @param event The event that is triggered when the weather on a server changes.
      */
     @EventHandler
     public void displayWeatherChangeMessage(WeatherChangeEvent event) {
@@ -167,9 +167,9 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
     }
 
     /**
-     * //TODO
+     * Easter Egg.
      *
-     * @param event
+     * @param event Stuff.
      */
     @EventHandler
     public void changeWeatherWithChat(AsyncPlayerChatEvent event) {
@@ -201,9 +201,9 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
     }
 
     /**
-     * Cancels the lighting of fires.
+     * Cancels the lighting of fires if struck by lightening.
      *
-     * @param event
+     * @param event The event triggered when A block is ignited.
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void cancelLightningFires(BlockIgniteEvent event) {
@@ -214,7 +214,7 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
     // loading
 
     /**
-     * Loads stuff.
+     * Loads the messages that pop up when the weather changes.
      *
      * @param sender The person who typed the command.
      */
@@ -269,7 +269,7 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
     // saving
 
     /**
-     * Saves stuff.
+     * Saves the current <code>weather_change_messages</code> to a file.
      *
      * @param sender The person who typed the command.
      * @param display_message Whether to display a message.
@@ -301,11 +301,11 @@ public class myZeus extends JavaPlugin implements Listener, ActionListener {
     // plugin commands
 
     /**
-     * Changes the weather.
+     * Changes the weather based on the string sent to it.
      *
      * @param sender The person who typed the command.
      * @param weather The weather to change to.
-     * @param through_chat Whether it was sent through chat.
+     * @param through_chat //TODO wah......
      */
     private void changeTheWeather(CommandSender sender, String weather, boolean through_chat) {
         if (weather.equalsIgnoreCase("happy"))
